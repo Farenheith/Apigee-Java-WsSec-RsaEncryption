@@ -12,7 +12,7 @@
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-    <java.version>18</java.version>
+    <java.version>8</java.version>
     <santuario.version>[2.1.4,)</santuario.version>
     <testng.version>6.8.7</testng.version>
     <bouncycastle.version>1.80</bouncycastle.version>
@@ -64,14 +64,18 @@ do it manually by running these commands:
 -->
 
     <dependency>
-      <groupId>com.apigee.edge</groupId>
+      <groupId>com.apigee.gateway.libraries</groupId>
       <artifactId>message-flow</artifactId>
       <version>1.0.0</version>
+      <scope>provided</scope>
+      <type>jar</type>
     </dependency>
     <dependency>
-      <groupId>com.apigee.edge</groupId>
+      <groupId>com.apigee.infra.libraries</groupId>
       <artifactId>expressions</artifactId>
       <version>1.0.0</version>
+      <scope>provided</scope>
+      <type>jar</type>
     </dependency>
 
     <dependency>
@@ -137,7 +141,7 @@ do it manually by running these commands:
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-jar-plugin</artifactId>
-        <version>3.2.0</version>
+        <version>3.4.2</version>
         <configuration>
           <archive>
             <!-- do not include the pom.xml file in the generated jar -->
@@ -179,8 +183,6 @@ do it manually by running these commands:
                     <include name="${project.build.finalName}.jar"/>
                     <!-- copy any required dependencies -->
                     <include name="lib/*.jar"/>
-                    <exclude name="lib/bcprov-jdk18on-*.jar"/>
-                    <exclude name="lib/bcpkix-jdk18on-*.jar"/>
                     <exclude name="lib/message-flow-1.0.0.jar"/>
                     <exclude name="lib/expressions-1.0.0.jar"/>
                     <include name="lib/slf4j-api-*.jar"/>
@@ -196,7 +198,7 @@ do it manually by running these commands:
      <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-enforcer-plugin</artifactId>
-        <version>3.0.0-M3</version>
+        <version>3.5.0</version>
         <executions>
           <execution>
             <id>enforce-maven</id>
@@ -206,7 +208,7 @@ do it manually by running these commands:
             <configuration>
               <rules>
                 <requireMavenVersion>
-                  <version>3.5.0</version>
+                  <version>3.8.7</version>
                 </requireMavenVersion>
               </rules>
             </configuration>
