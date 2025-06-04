@@ -38,7 +38,6 @@ import javax.naming.InvalidNameException;
 import javax.naming.ldap.LdapName;
 import javax.naming.ldap.Rdn;
 import javax.security.auth.x500.X500Principal;
-import javax.xml.bind.DatatypeConverter;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
@@ -284,9 +283,12 @@ public abstract class WssecCalloutBase {
 
   protected static String getThumbprintHex(X509Certificate certificate)
       throws NoSuchAlgorithmException, CertificateEncodingException {
-    return DatatypeConverter.printHexBinary(
-            MessageDigest.getInstance("SHA-1").digest(certificate.getEncoded()))
-        .toLowerCase();
+    byte[] digest = MessageDigest.getInstance("SHA-1").digest(certificate.getEncoded());
+    StringBuilder sb = new StringBuilder();
+    for (byte b : digest) {
+      sb.append(String.format("%02x", b));
+    }
+    return sb.toString();
   }
 
   protected static String getStackTraceAsString(Throwable t) {
