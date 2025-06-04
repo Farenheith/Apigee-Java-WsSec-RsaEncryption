@@ -11,8 +11,8 @@ import java.io.InputStream;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
-import mockit.Mock;
-import mockit.MockUp;
+import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
 import org.testng.annotations.BeforeMethod;
 
 public abstract class CalloutTestBase {
@@ -276,58 +276,48 @@ public abstract class CalloutTestBase {
     System.out.printf("\n\n==================================================================\n");
     System.out.printf("TEST %s.%s()\n", className, methodName);
 
-    msgCtxt =
-        new MockUp<MessageContext>() {
-          private Map variables;
+    MockitoAnnotations.openMocks(this);
+    
+    // Create a map to store variables for the mock MessageContext
+    final Map<String, Object> variables = new HashMap<String, Object>();
 
-          public void $init() {
-            variables = new HashMap();
-          }
+    // Create mock MessageContext
+    msgCtxt = Mockito.mock(MessageContext.class);
+    
+    // Mock the getVariable method
+    Mockito.when(msgCtxt.getVariable(Mockito.anyString())).thenAnswer(invocation -> {
+      String name = invocation.getArgument(0);
+      return variables.get(name);
+    });
+    
+    // Mock the setVariable method
+    Mockito.when(msgCtxt.setVariable(Mockito.anyString(), Mockito.any())).thenAnswer(invocation -> {
+      String name = invocation.getArgument(0);
+      Object value = invocation.getArgument(1);
+      System.out.printf("setVariable(%s, %s)\n", name, value==null?"-null-":value.toString());
+      variables.put(name, value);
+      return true;
+    });
+    
+    // Mock the removeVariable method  
+    Mockito.when(msgCtxt.removeVariable(Mockito.anyString())).thenAnswer(invocation -> {
+      String name = invocation.getArgument(0);
+      if (variables.containsKey(name)) {
+        variables.remove(name);
+      }
+      return true;
+    });
 
-          @Mock()
-          public <T> T getVariable(final String name) {
-            if (variables == null) {
-              variables = new HashMap();
-            }
-            return (T) variables.get(name);
-          }
+    // Create mock ExecutionContext
+    exeCtxt = Mockito.mock(ExecutionContext.class);
 
-          @Mock()
-          public boolean setVariable(final String name, final Object value) {
-            if (variables == null) {
-              variables = new HashMap();
-            }
-            System.out.printf("setVariable(%s, %s)\n", name, value==null?"-null-":value.toString());
-            variables.put(name, value);
-            return true;
-          }
-
-          @Mock()
-          public boolean removeVariable(final String name) {
-            if (variables == null) {
-              variables = new HashMap();
-            }
-            if (variables.containsKey(name)) {
-              variables.remove(name);
-            }
-            return true;
-          }
-
-          @Mock()
-          public Message getMessage() {
-            return message;
-          }
-        }.getMockInstance();
-
-    exeCtxt = new MockUp<ExecutionContext>() {}.getMockInstance();
-
-    message =
-        new MockUp<Message>() {
-          @Mock()
-          public InputStream getContentAsStream() {
-            // new ByteArrayInputStream(messageContent.getBytes(StandardCharsets.UTF_8));
-            return messageContentStream;
-          }
-        }.getMockInstance();
+    // Create mock Message
+    message = Mockito.mock(Message.class);
+    
+    // Mock getMessage to return our mock message
+    Mockito.when(msgCtxt.getMessage()).thenReturn(message);
+    
+    // Mock getContentAsStream 
+    Mockito.when(message.getContentAsStream()).thenReturn(messageContentStream);
   }
 }

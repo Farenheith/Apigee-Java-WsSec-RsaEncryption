@@ -12,7 +12,7 @@
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-    <java.version>1.8</java.version>
+    <java.version>18</java.version>
     <santuario.version>[2.1.4,)</santuario.version>
     <testng.version>6.8.7</testng.version>
     <bouncycastle.version>1.80</bouncycastle.version>
@@ -82,9 +82,16 @@ do it manually by running these commands:
     </dependency>
 
     <dependency>
-      <groupId>com.googlecode.jmockit</groupId>
-      <artifactId>jmockit</artifactId>
-      <version>1.7</version>
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-core</artifactId>
+      <version>4.11.0</version>
+      <scope>test</scope>
+    </dependency>
+    
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-simple</artifactId>
+      <version>1.7.36</version>
       <scope>test</scope>
     </dependency>
 
@@ -117,10 +124,13 @@ do it manually by running these commands:
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
-        <version>3.8.1</version>
+        <version>3.6.2</version>
         <configuration>
           <source>${java.version}</source>
           <target>${java.version}</target>
+          <compilerArgs>
+            <arg>-Xlint:deprecation</arg>
+          </compilerArgs>
         </configuration>
       </plugin>
 
@@ -169,8 +179,8 @@ do it manually by running these commands:
                     <include name="${project.build.finalName}.jar"/>
                     <!-- copy any required dependencies -->
                     <include name="lib/*.jar"/>
-                    <exclude name="lib/bcprov-jdk18on-*.*.jar"/>
-                    <exclude name="lib/bcpkix-jdk18on-*.*.jar"/>
+                    <exclude name="lib/bcprov-jdk18on-*.jar"/>
+                    <exclude name="lib/bcpkix-jdk18on-*.jar"/>
                     <exclude name="lib/message-flow-1.0.0.jar"/>
                     <exclude name="lib/expressions-1.0.0.jar"/>
                     <include name="lib/slf4j-api-*.jar"/>
